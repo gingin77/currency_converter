@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
-const assert = require('assert'); 
+const mongoose            = require('mongoose');
+const assert              = require('assert'); 
+const { getCurrencyInfo } = require('./rates');
 
 mongoose.connect('mongodb://localhost/currency_converter')
     .then(() => console.log('Connected to MongoDB'))
@@ -44,12 +45,6 @@ async function createConversion() {
     }
 }
 
-// createConversion()
-
-// async function addConversion() {
-//     Conversion.create(conversion, )
-// }
-
 const addConversion = (conversion) => {
     Conversion.create(conversion, (err) => {
         assert.equal(null, err);
@@ -59,4 +54,36 @@ const addConversion = (conversion) => {
     });
 };
 
-module.exports = { addConversion };
+// function createConversionFromInputs(inputs) {
+//     const convert_to = {
+//         convert_to_currency: 'EUR'
+//     }
+
+//     const object2 = Object.assign(convert_to, inputs);
+
+//     console.log(object2);
+// }
+// Terminal content
+// currency_converter  $ node script.js createConversionFromInputs 800
+// { convert_to_currency: 'EUR', input_amount: '800' }
+// Connected to MongoDB
+
+
+async function createConversionFromInputs(inputs) {
+    const convert_to = {
+        convert_to_currency: 'EUR'
+    }
+
+    const object2 = Object.assign(convert_to, inputs);
+
+    console.log(object2);
+
+    try {
+        await getCurrencyInfo('EUR');
+    }
+    catch(exception) {
+        console.log(exception.message);
+    }
+}
+
+module.exports = { addConversion, createConversionFromInputs };

@@ -1,10 +1,7 @@
-const express             = require('express');
-const app                 = express();
 const request             = require('request');
 const dotenv              = require('dotenv').config();
 const currencyToSymbolMap = require('currency-symbol-map/map');
 const moment              = require('moment');
-moment().format();
 
 const key        = process.env.OPEN_EXCHANGE_KEY
 const oe_root    = 'https://openexchangerates.org/api/'
@@ -14,6 +11,7 @@ const latest_url     = `${oe_root}${oe_options.latest}app_id=${key}`
 const currencies_url = 'https://openexchangerates.org/api/currencies.json'
 
 async function getCurrencyInfo(currency) {
+    console.log("Getting exchange rate....")
     const symbol = currencyToSymbolMap[currency];
 
     try {
@@ -34,9 +32,6 @@ Time retrieved with MyCurrencyConverter: ${ moment(timeRetrieved).format('dddd, 
         console.log('Error', err.message);
     }
 }
-
-getCurrencyInfo('AED')
-getCurrencyInfo('EUR')
 
 function getExchangeRate() {
     return new Promise((resolve, reject) => {
@@ -60,5 +55,4 @@ function getCurrencyName(currency) {
     });
 }
 
-const port = process.env.PORT || 3000
-app.listen(port, () => console.log(`Listening on port ${ port }`));
+module.exports = { getCurrencyInfo };

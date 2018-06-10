@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const program = require('commander');
-const { addConversion } = require('./conversions');
+const { addConversion, createConversionFromInputs } = require('./conversions');
 
 // var inquirer = require('inquirer');
 
@@ -15,6 +15,13 @@ program
     .description('Add a conversion record')
     .action((input_amount) => {
         addConversion({ input_amount });
+    });
+
+program
+    .command('createConversionFromInputs <input_amount>')
+    .description('Combine input with a non-default value')
+    .action((input_amount) => {
+        createConversionFromInputs({ input_amount });
     });
 
 program.parse(process.argv);
