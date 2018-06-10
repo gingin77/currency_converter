@@ -9,10 +9,15 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bin": {
+    "currency_converter": "./script.js"
+  },
   "dependencies": {
+    "commander": "^2.15.1",
     "currency-symbol-map": "^4.0.4",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
+    "inquirer": "^6.0.0",
     "moment": "^2.22.2",
     "request": "^2.87.0"
   }
