@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
+const assert = require('assert'); 
 
 mongoose.connect('mongodb://localhost/currency_converter')
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('Could not connect to MongoDB...', err));
+
+const db = mongoose.connection;
 
 const conversionSchema = mongoose.Schema({
     base_currency: { 
@@ -15,9 +18,9 @@ const conversionSchema = mongoose.Schema({
         default: 'JPY',
         required: true
      },
-    rate: { type: Number, required: true },
+    rate: { type: Number, required: false },
     input_amount: { type: Number, required: true },
-    output_amout: { type: Number, required: true },
+    output_amout: { type: Number, required: false },
     rate_timestamp: { type: Date, required: false },
     conversion_timestamp: { type: Date, required: false }
 });
@@ -41,4 +44,19 @@ async function createConversion() {
     }
 }
 
-createConversion()
+// createConversion()
+
+// async function addConversion() {
+//     Conversion.create(conversion, )
+// }
+
+const addConversion = (conversion) => {
+    Conversion.create(conversion, (err) => {
+        assert.equal(null, err);
+        console.log(conversion);
+        console.info('New conversion added');
+        db.close();
+    });
+};
+
+module.exports = { addConversion };

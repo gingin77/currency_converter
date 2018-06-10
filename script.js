@@ -1,11 +1,23 @@
 #!/usr/bin/env node
 
-var program = require('commander');
-var inquirer = require('inquirer');
+const program = require('commander');
+const { addConversion } = require('./conversions');
+
+// var inquirer = require('inquirer');
 
 program
     .version('0.0.1')
     .parse(process.argv)
+
+
+program
+    .command('addConversion <input_amount>')
+    .description('Add a conversion record')
+    .action((input_amount) => {
+        addConversion({ input_amount });
+    });
+
+program.parse(process.argv);
 
 let questions = [
     {
@@ -31,6 +43,6 @@ let questions = [
     }
 ];
 
-let prompt_1 = inquirer.createPromptModule();
-prompt_1(questions)
-    .then(answers => { console.log(answers) });
+// let prompt_1 = inquirer.createPromptModule();
+// prompt_1(questions)
+//     .then(answers => { console.log(answers) });
