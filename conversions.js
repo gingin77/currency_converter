@@ -118,11 +118,26 @@ async function createConversion(answers) {
   }
 }
 
+async function getLastConversion() {
+  try {
+    const conversion = await Conversion
+      .find()
+      .sort({ $natural: -1 })
+      .limit(1);
+
+    return conversion[0]
+  }
+  catch (ex) {
+    console.log(ex.message);
+  }
+}
+
 function closeConnection() {
   db.close();
 }
 
 module.exports = {
   createConversion,
+  getLastConversion,
   closeConnection
 }

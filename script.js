@@ -8,16 +8,19 @@ const prompt    = inquirer.createPromptModule();
 
 const {
   createConversion,
+  getLastConversion,
   closeConnection
 } = require('./conversions')
 
-const { prettyPrintConversion } = require('./formatter')
+const {
+  prettyPrintConversion
+} = require("./formatter");
 
 program
   .version('0.0.1')
 
-function endConvert(result) {
-  prettyPrintConversion(result);
+function endScript(result, newRecordStatus) {
+  prettyPrintConversion(result, newRecordStatus);
   closeConnection();
 }
 
@@ -32,9 +35,22 @@ program
           reject(new Error('The conversion failed to process'));
         });
         output
-          .then(result => endConvert(result))
+          .then(result => endScript(result, true))
           .catch(err => console.log('Error', err.message));
       });
+  });
+
+program
+  .command('last-one')
+  .description('Retrieves a record of the last conversion')
+  .action(() => {
+    let record = new Promise((res,rej) => {
+      res(getLastConversion());
+      rej(new Error("The last conversion was not retrieved"));
+    })
+    record
+      .then(result => endScript(result, false))
+      .catch(err => console.log("Error", err.message));
   });
 
 program.parse(process.argv);
