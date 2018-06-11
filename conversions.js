@@ -30,11 +30,11 @@ const conversionSchema = mongoose.Schema({
   },
   baseRate: {
     type: Number,
-    required: false
+    required: true
   },
   convertToRate: {
     type: Number,
-    required: false
+    required: true
   },
   inputAmount: {
     type: Number,
@@ -42,16 +42,16 @@ const conversionSchema = mongoose.Schema({
   },
   outputAmount: {
     type: Number,
-    required: false
+    required: true
   },
   ratePublicationTime: {
     type: Date,
-    required: false
+    required: true
   },
   conversionTime: {
     type: Date,
     default: Date.now(),
-    required: false
+    required: true
   }
 });
 
