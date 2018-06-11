@@ -10,13 +10,12 @@
   "author": "",
   "license": "ISC",
   "bin": {
-    "currency_converter": "./script.js"
+    "curry": "./script.js"
   },
   "dependencies": {
     "commander": "^2.15.1",
     "currency-symbol-map": "^4.0.4",
     "dotenv": "^6.0.0",
-    "express": "^4.16.3",
     "inquirer": "^6.0.0",
     "moment": "^2.22.2",
     "mongoose": "^5.1.4",

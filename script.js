@@ -1,65 +1,42 @@
 #!/usr/bin/env node
 
 const program = require('commander');
-const { collectConversionProperties } = require('./conversions');
+const {
+  createConversion,
+  closeConnection
+} = require('./conversions');
 
-var inquirer = require('inquirer');
+const inquirer = require('inquirer');
+const prompt = inquirer.createPromptModule();
 
-program
-    .version('0.0.1')
-
-const questions = [
-    {
-        type: "list",
-        name: "baseCurrencyName",
-        message: "Choose a base currency type to convert from:",
-        choices: [
-            "United States Dollar",
-            "Bitcoin",
-            "Brazilian Real",
-            "Euro",
-            "Fijian Dollar",
-            "Icelandic Króna",
-            "Japanese Yen",
-            "Moroccan Dirham",
-            "Russian Ruble",
-            "Tanzanian Shilling"
-        ]
-    },
-    {
-        type: "list",
-        name: "convertToCurrencyName",
-        message: "Choose a currency type to convert to:",
-        choices: [
-            "United States Dollar",
-            "Bitcoin",
-            "Brazilian Real",
-            "Euro",
-            "Fijian Dollar",
-            "Icelandic Króna",
-            "Japanese Yen",
-            "Moroccan Dirham",
-            "Russian Ruble",
-            "Tanzanian Shilling"
-        ]
-    },
-    {
-        type: "input",
-        name: "inputAmount",
-        message: "How much do you want to convert?"
-    }
-];
-
-const initialPrompt = inquirer.createPromptModule();
+const questions = require('./references/questions');
 
 program
-    .command('convert')
-    .description('Collect inputs for currency conversion')
-    .action(() => {
-        initialPrompt(questions)
-            .then(answers => {
-                collectConversionProperties(answers)
-            });
-    });
+  .version('0.0.1')
+
+function prettyPrintConversion(result) {
+  console.log(`Pretty printed...\n ${result}`)
+}
+
+function endConvert(result) {
+  prettyPrintConversion(result);
+  closeConnection();
+}
+
+program
+  .command('convert')
+  .description('Promts user to submit currencies and value for conversion')
+  .action(() => {
+    prompt(questions)
+      .then(answers => {
+        let output = new Promise((resolve, reject) => {
+          resolve(createConversion(answers));
+          reject(new Error('The conversion failed to process'));
+        });
+        output
+          .then(result => endConvert(result))
+          .catch(err => console.log('Error', err.message));
+      });
+  });
 
 program.parse(process.argv);
