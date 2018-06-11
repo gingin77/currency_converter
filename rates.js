@@ -7,7 +7,7 @@ function getExchangeRates(base, convertTo) {
     const url = `https://openexchangerates.org/api/latest.json?app_id=${key}&symbols=${list}`
 
     return new Promise((resolve, reject) => {
-        console.log(`\n  Getting exchange rates...`);
+        console.log(`\nGetting exchange rates...`);
         request(url, (error, response, body) => {
             if (!error && response.statusCode == 200) {
                 resolve(JSON.parse(body))
