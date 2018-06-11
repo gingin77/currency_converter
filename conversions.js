@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const currencyNames = require('./references/currency_names_codes.json')
-const {
-  getExchangeRates
-} = require('./rates');
+const mongoose   = require('mongoose');
+const validators = require('mongoose-validators');
+
+const currencyNames = require('./lib/currency_names_codes.json');
+const { getExchangeRates } = require('./rates');
 
 mongoose.connect('mongodb://localhost/currency_converter')
   .catch(err => console.error('Could not connect to the database...', err));
@@ -10,14 +10,22 @@ mongoose.connect('mongodb://localhost/currency_converter')
 const db = mongoose.connection;
 
 const conversionSchema = mongoose.Schema({
-  baseCurrency: {
+  baseISO: {
     type: String,
-    default: 'USD',
+    required: true,
+    validate: validators.isLength(3)
+  },
+  convertToISO: {
+    type: String,
+    required: true,
+    validate: validators.isLength(3)
+  },
+  baseCurrencyName: {
+    type: String,
     required: true
   },
-  convertToCurrency: {
+  convertToCurrencyName: {
     type: String,
-    default: 'JPY',
     required: true
   },
   baseRate: {
@@ -32,7 +40,7 @@ const conversionSchema = mongoose.Schema({
     type: Number,
     required: true
   },
-  outputAmout: {
+  outputAmount: {
     type: Number,
     required: false
   },
@@ -57,23 +65,25 @@ function organizeinputs(answers) {
   } = answers;
 
   return {
-    baseCurrency: currencyNames[baseCurrencyName],
-    convertToCurrency: currencyNames[convertToCurrencyName],
+    baseCurrencyName: baseCurrencyName,
+    convertToCurrencyName: convertToCurrencyName,
+    baseISO: currencyNames[baseCurrencyName],
+    convertToISO: currencyNames[convertToCurrencyName],
     inputAmount: inputAmount
   }
 }
 
 async function getRatesObject(inputs) {
   try {
-    const [base, convert] = [inputs.baseCurrency, inputs.convertToCurrency];
+    const [base, convert] = [inputs.baseISO, inputs.convertToISO];
     const rateApiResponse = await getExchangeRates(base, convert);
 
     const { rates } = rateApiResponse;
     const ratePublicationTime = rateApiResponse.timestamp * 1000;
 
     const ratesObject = {
-      baseRate: rates[inputs.baseCurrency],
-      convertToRate: rates[inputs.convertToCurrency],
+      baseRate: rates[inputs.baseISO],
+      convertToRate: rates[inputs.convertToISO],
       ratePublicationTime: ratePublicationTime
     }
     return ratesObject
@@ -84,10 +94,10 @@ async function getRatesObject(inputs) {
 }
 
 function calculateConversion(rates, inputs) {
-  const ratesRatio = 1 / rates.baseRate * rates.convertToRate
-  const product = inputs.inputAmount * ratesRatio
+  const ratesRatio = 1 / rates.baseRate * rates.convertToRate;
+  const product = inputs.inputAmount * ratesRatio;
 
-  return { outputAmout: product }
+  return { outputAmount: product }
 }
 
 async function createConversion(answers) {
@@ -115,4 +125,4 @@ function closeConnection() {
 module.exports = {
   createConversion,
   closeConnection
-};
+}

@@ -19,6 +19,9 @@
     "inquirer": "^6.0.0",
     "moment": "^2.22.2",
     "mongoose": "^5.1.4",
-    "request": "^2.87.0"
+    "mongoose-validators": "^0.1.0",
+    "pluralize": "^7.0.0",
+    "request": "^2.87.0",
+    "terminal-link": "^1.1.0"
   }
 }
