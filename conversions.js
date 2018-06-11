@@ -1,89 +1,79 @@
-const mongoose            = require('mongoose');
-const assert              = require('assert'); 
-const { getCurrencyInfo } = require('./rates');
+const mongoose             = require('mongoose');
+const currencyNames        = require('./references/currency_names_codes.json')
+const { getExchangeRates } = require('./rates');
 
 mongoose.connect('mongodb://localhost/currency_converter')
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('Could not connect to MongoDB...', err));
+    .catch(err => console.error('Could not connect to the database...', err));
 
 const db = mongoose.connection;
 
 const conversionSchema = mongoose.Schema({
-    base_currency: { 
+    baseCurrency: {
         type: String, 
         default: 'USD',
         required: true
-     },
-    convert_to_currency: { 
+    },
+    convertToCurrency: {
         type: String, 
         default: 'JPY',
         required: true
-     },
-    rate: { type: Number, required: false },
-    input_amount: { type: Number, required: true },
-    output_amout: { type: Number, required: false },
-    rate_timestamp: { type: Date, required: false },
-    conversion_timestamp: { type: Date, required: false }
+    },
+    baseRate: { type: Number, required: false },
+    convertToRate: { type: Number, required: false },
+    inputAmount: { type: Number, required: true },
+    outputAmout: { type: Number, required: false },
+    ratePublicationTime: { type: Date, required: false },
+    conversionTime: {
+        type: Date,
+        default: Date.now(),
+        required: false
+    }
 });
 
 const Conversion = mongoose.model('Conversion', conversionSchema);
 
-async function createConversion() {
-    const conversion = new Conversion({
-        rate: 109.55,
-        input_amount: 10,
-        output_amout: 1095.50,
-        conversion_timestamp: Date.now()
-    });
+async function collectConversionProperties(inputs) {
+    const { baseCurrencyName, convertToCurrencyName, inputAmount } = inputs;
     
-    try {
-        const result = await conversion.save();
-        console.log(result);
-    }
-    catch(ex) {
-        console.log(ex.message);
-    }
-}
-
-const addConversion = (conversion) => {
-    Conversion.create(conversion, (err) => {
-        assert.equal(null, err);
-        console.log(conversion);
-        console.info('New conversion added');
-        db.close();
-    });
-};
-
-// function createConversionFromInputs(inputs) {
-//     const convert_to = {
-//         convert_to_currency: 'EUR'
-//     }
-
-//     const object2 = Object.assign(convert_to, inputs);
-
-//     console.log(object2);
-// }
-// Terminal content
-// currency_converter  $ node script.js createConversionFromInputs 800
-// { convert_to_currency: 'EUR', input_amount: '800' }
-// Connected to MongoDB
-
-
-async function createConversionFromInputs(inputs) {
-    const convert_to = {
-        convert_to_currency: 'EUR'
-    }
-
-    const object2 = Object.assign(convert_to, inputs);
-
-    console.log(object2);
+    const userInputs = new Object({
+        baseCurrency: currencyNames[baseCurrencyName],
+        convertToCurrency: currencyNames[convertToCurrencyName],
+        inputAmount: inputAmount
+    })
 
     try {
-        await getCurrencyInfo('EUR');
+        const rateApiResponse  = await getExchangeRates(userInputs.baseCurrency, userInputs.convertToCurrency);
+        const { rates } = rateApiResponse;
+
+        const baseRate      = rates[userInputs.baseCurrency];
+        const convertToRate = rates[userInputs.convertToCurrency]
+
+        const conversionProperties = Object.assign(
+            userInputs, {
+                baseRate: baseRate,
+                convertToRate: convertToRate,
+                ratePublicationTime: (rateApiResponse.timestamp * 1000),
+                outputAmout: inputAmount * 1 / baseRate * convertToRate
+            }
+        )
+        createConversion(conversionProperties);
     }
     catch(exception) {
         console.log(exception.message);
     }
 }
 
-module.exports = { addConversion, createConversionFromInputs };
+async function createConversion(conversionInputs) {
+    const conversion = new Conversion(conversionInputs);
+
+    try {
+        const result = await conversion.save();
+        console.log(result);
+        db.close();
+    }
+    catch (ex) {
+        console.log(ex.message);
+    }
+}
+
+module.exports = { collectConversionProperties };

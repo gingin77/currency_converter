@@ -1,55 +1,65 @@
 #!/usr/bin/env node
 
 const program = require('commander');
-const { addConversion, createConversionFromInputs } = require('./conversions');
+const { collectConversionProperties } = require('./conversions');
 
-// var inquirer = require('inquirer');
+var inquirer = require('inquirer');
 
 program
     .version('0.0.1')
-    .parse(process.argv)
 
-
-program
-    .command('addConversion <input_amount>')
-    .description('Add a conversion record')
-    .action((input_amount) => {
-        addConversion({ input_amount });
-    });
-
-program
-    .command('createConversionFromInputs <input_amount>')
-    .description('Combine input with a non-default value')
-    .action((input_amount) => {
-        createConversionFromInputs({ input_amount });
-    });
-
-program.parse(process.argv);
-
-let questions = [
+const questions = [
     {
         type: "list",
-        name: "currency type",
-        message: "Choose a currency type to convert to:",
+        name: "baseCurrencyName",
+        message: "Choose a base currency type to convert from:",
         choices: [
-            "Tanzanian Shilling",
-            "Fijian Dollar",
+            "United States Dollar",
             "Bitcoin",
             "Brazilian Real",
             "Euro",
+            "Fijian Dollar",
             "Icelandic Króna",
             "Japanese Yen",
             "Moroccan Dirham",
-            "Russian Ruble"
+            "Russian Ruble",
+            "Tanzanian Shilling"
+        ]
+    },
+    {
+        type: "list",
+        name: "convertToCurrencyName",
+        message: "Choose a currency type to convert to:",
+        choices: [
+            "United States Dollar",
+            "Bitcoin",
+            "Brazilian Real",
+            "Euro",
+            "Fijian Dollar",
+            "Icelandic Króna",
+            "Japanese Yen",
+            "Moroccan Dirham",
+            "Russian Ruble",
+            "Tanzanian Shilling"
         ]
     },
     {
         type: "input",
-        name: "amount",
+        name: "inputAmount",
         message: "How much do you want to convert?"
     }
 ];
 
-// let prompt_1 = inquirer.createPromptModule();
-// prompt_1(questions)
-//     .then(answers => { console.log(answers) });
+const initialPrompt = inquirer.createPromptModule();
+
+program
+    .command('convert')
+    .description('Collect inputs for currency conversion')
+    .action(() => {
+        initialPrompt(questions)
+            .then(answers => {
+                collectConversionProperties(answers)
+            });
+    });
+
+program.parse(process.argv);
