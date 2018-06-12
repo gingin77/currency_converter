@@ -44,7 +44,7 @@ function completeCSV(){
 
 program
   .command('convert')
-  .description('Promts user to submit currencies and value for conversion')
+  .description('Prompts user to submit currency types and a value to convert')
   .action(() => {
     prompt(createQuestions).then(answers => {
       let output = new Promise((resolve, reject) => {
@@ -72,7 +72,7 @@ program
 
 program
   .command('last-ten')
-  .description("Retrieves up to 10 most recent conversions")
+  .description("Retrieves up to 10 of the most recent conversions")
   .action(() => {
     let records = new Promise((res, rej) => {
       res(getLastTenConversions());
@@ -85,7 +85,7 @@ program
 
 program
   .command("query-currency")
-  .description("Allows query based on convert-to currency; Max 10 records")
+  .description("Returns up to 10 records for a selected converted-to currency")
   .action(() => {
     prompt(queryQuestions).then(answer => {
       let records = new Promise((res, rej) => {
@@ -100,7 +100,7 @@ program
 
 program
   .command("csv-export")
-  .description("Allows historical conversions to be exported in .csv format")
+  .description("Allows ALL historical conversions to be exported to a .csv file")
   .action(() => {
     prompt(csvQuestions).then(answers => {
       let csv = new Promise((res,rej) => {
