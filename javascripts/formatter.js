@@ -105,8 +105,7 @@ ${columnify(recordsObj, {
       rate_Pub_Time: { align: "center", minWidth: 30 }
     }
   })}\n
-If you would like access more details from your curry convert history, you 
-can export all of you conversions to a CSV file with the 'csv-export' option.`);
+If you would like to access more details from your currency conversion history, you \ncan export all of you conversions to a CSV file with the 'csv-export' option.`);
 }
 
 function prettyPrintConversion(conversion, newRecordStatus) {
