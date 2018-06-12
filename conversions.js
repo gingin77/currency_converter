@@ -87,6 +87,7 @@ async function getRatesObject(inputs) {
       ratePublicationTime: ratePublicationTime
     }
     return ratesObject
+
   }
   catch (ex) {
     console.log(ex.message);
@@ -112,6 +113,7 @@ async function createConversion(answers) {
     );
     const document = await conversion.save();
     return document
+
   }
   catch (ex) {
     console.log(ex.message);
@@ -122,13 +124,41 @@ async function getLastConversion() {
   try {
     const conversion = await Conversion
       .find()
-      .sort({ $natural: -1 })
+      .sort({ _id: -1 })
       .limit(1);
-
     return conversion[0]
+
   }
   catch (ex) {
     console.log(ex.message);
+  }
+}
+
+async function getLastTenConversions() {
+  try {
+    const conversions = await Conversion
+      .find()
+      .sort({ _id: -1 })
+      .limit(10);
+    return conversions;
+
+  } catch (ex) {
+    console.log(ex.message);
+  }
+}
+
+async function getTenConversionsByCurrency(currency) {
+  const { queryCurrency } = currency
+
+  try {
+    const conversions = await Conversion
+      .find({ convertToCurrencyName: queryCurrency })
+      .sort({ _id: -1 })
+      .limit(10);
+    return conversions;
+
+  } catch (ex) {
+    console.log(`Query Error ${ex.message}`);
   }
 }
 
@@ -139,5 +169,7 @@ function closeConnection() {
 module.exports = {
   createConversion,
   getLastConversion,
+  getLastTenConversions,
+  getTenConversionsByCurrency,
   closeConnection
 }

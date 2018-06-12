@@ -6,19 +6,19 @@ const getSymbolFromCurrency = require("currency-symbol-map");
 function namePluralizer(amount, currencyName) {
   const factor = amount > 1 ? 2 : 1;
 
-  if (currencyName != "Japanese Yen") {
-    return pluralize(currencyName, factor);
-  } else {
-    return currencyName;
-  }
+  return currencyName == "Japanese Yen" ? currencyName : pluralize(currencyName, factor);
+}
+
+function valueFormatter(amount) {
+  return amount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 function formatString(isoCode, amount, currencyName) {
   const symbol = getSymbolFromCurrency(isoCode);
-  const value = amount.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });  
+  const value = valueFormatter(amount);
   const name = namePluralizer(amount, currencyName);
 
   return `${symbol} ${value} ${name}`;
@@ -26,10 +26,10 @@ function formatString(isoCode, amount, currencyName) {
 
 function newConversionMessageTemplate(details) {
   const { inputString,
-    outputString,
-    ratePublicationTimeF,
-    rateObject,
-    conversionTimeF } = details;
+          outputString,
+          ratePublicationTimeF,
+          rateObject,
+          conversionTimeF } = details;
 
   console.log(`\n
 The amount of:  ${inputString}
@@ -69,6 +69,45 @@ Exchange rates are set with respect to one US Dollar ($1.00).\n
 `);
 }
 
+function messageTimeFormatter(time) {
+  return moment(time).format("dddd, MMMM Do, YYYY [at] h:mm a");
+}
+
+function listTimeFormat(time) {
+  return moment(time).format("h:mm a, MM/DD/YYYY");
+}
+
+function prettyPrintRecordsInList(records) {
+  const recordsObj = records.map(r => ({
+    input_Value: valueFormatter(r.inputAmount),
+    currency_Base: r.baseCurrencyName,
+    base_rate: r.baseRate.toFixed(4),
+    output_Value: valueFormatter(r.outputAmount),
+    currency_Converting_To: r.convertToCurrencyName,
+    convert_to_rate: r.convertToRate.toFixed(4),
+    rate_Pub_Time: listTimeFormat(r.ratePublicationTime),
+    conversion_Time: listTimeFormat(r.conversionTime)
+  }));
+
+  const currencyName = records[0].convertToCurrencyName;
+
+  console.log(`
+Here are your most recent conversions into ${namePluralizer(2, currencyName)}:
+  
+${columnify(recordsObj, {
+  config: {
+    input_Value: { align: "right", minWidth: 16 },
+    currency_Base: { minWidth: 30 },
+    output_Value: { align: "right", minWidth: 16 },
+    currency_Converting_To: { minWidth: 30 },
+    base_rate: { align: "center", minWidth: 10 },
+    convert_to_rate: { align: "center", minWidth: 10 },
+    rate_Pub_Time: { align: "center", minWidth: 30 }
+  }
+})}
+\nIf you would like more information, you can export all of you conversions to a CSV file by running 'curry csv'.`);
+}
+
 function prettyPrintConversion(conversion, newRecordStatus) {
   const {
     baseISO,
@@ -84,17 +123,10 @@ function prettyPrintConversion(conversion, newRecordStatus) {
   } = conversion;
 
   const inputString = formatString(baseISO, inputAmount, baseCurrencyName);
-  const outputString = formatString(
-    convertToISO,
-    outputAmount,
-    convertToCurrencyName
-  );
-  const ratePublicationTimeF = moment(ratePublicationTime).format(
-    "dddd, MMMM Do, YYYY [at] h:mm a"
-  );
-  const conversionTimeF = moment(conversionTime).format(
-    "dddd, MMMM Do, YYYY [at] h:mm a"
-  );
+  const outputString = formatString(convertToISO,outputAmount,convertToCurrencyName);
+
+  const ratePublicationTimeF = messageTimeFormatter(ratePublicationTime);
+  const conversionTimeF = messageTimeFormatter(conversionTime);
 
   const rateObject = {
     [baseCurrencyName]: baseRate.toFixed(4),
@@ -116,4 +148,4 @@ function prettyPrintConversion(conversion, newRecordStatus) {
   }
 }
 
-module.exports = { prettyPrintConversion };
+module.exports = { prettyPrintConversion, prettyPrintRecordsInList };
