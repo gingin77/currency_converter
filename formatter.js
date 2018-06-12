@@ -95,17 +95,18 @@ function prettyPrintRecordsInList(records) {
 Here are your most recent conversions into ${namePluralizer(2, currencyName)}:
   
 ${columnify(recordsObj, {
-  config: {
-    input_Value: { align: "right", minWidth: 16 },
-    currency_Base: { minWidth: 30 },
-    output_Value: { align: "right", minWidth: 16 },
-    currency_Converting_To: { minWidth: 30 },
-    base_rate: { align: "center", minWidth: 10 },
-    convert_to_rate: { align: "center", minWidth: 10 },
-    rate_Pub_Time: { align: "center", minWidth: 30 }
-  }
-})}
-\nIf you would like more information, you can export all of you conversions to a CSV file by running 'curry csv'.`);
+    config: {
+      input_Value: { align: "right", minWidth: 16 },
+      currency_Base: { minWidth: 30 },
+      output_Value: { align: "right", minWidth: 16 },
+      currency_Converting_To: { minWidth: 30 },
+      base_rate: { align: "center", minWidth: 10 },
+      convert_to_rate: { align: "center", minWidth: 10 },
+      rate_Pub_Time: { align: "center", minWidth: 30 }
+    }
+  })}\n
+If you would like access more details from your curry convert history, you 
+can export all of you conversions to a CSV file with the 'csv-export' option.`);
 }
 
 function prettyPrintConversion(conversion, newRecordStatus) {

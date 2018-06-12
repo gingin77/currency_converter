@@ -2,9 +2,13 @@
 
 const program  = require('commander');
 const inquirer = require('inquirer');
+const prompt = inquirer.createPromptModule();
 
-const { createQuestions, queryQuestions } = require("./lib/questions");
-const prompt    = inquirer.createPromptModule();
+const {
+  createQuestions,
+  queryQuestions,
+  csvQuestions
+} = require("./lib/questions");
 
 const {
   createConversion,
@@ -19,6 +23,8 @@ const {
   prettyPrintRecordsInList
 } = require("./formatter");
 
+const { generateCsvBackup } = require('./csv_handler');
+
 program
   .version('0.0.1')
 
@@ -29,6 +35,10 @@ function printSingle(result, newRecordStatus) {
 
 function printBulk(records) {
   prettyPrintRecordsInList(records);
+  closeConnection();
+}
+
+function completeCSV(){
   closeConnection();
 }
 
@@ -84,6 +94,21 @@ program
       })
       records
         .then(result => printBulk(result))
+        .catch(err => console.log("Error", err.message));
+    });
+  });
+
+program
+  .command("csv-export")
+  .description("Allows historical conversions to be exported in .csv format")
+  .action(() => {
+    prompt(csvQuestions).then(answers => {
+      let csv = new Promise((res,rej) => {
+        res(generateCsvBackup(answers));
+        rej(new Error("The CSV backup failed."));
+      })
+      csv
+        .then(result => completeCSV())
         .catch(err => console.log("Error", err.message));
     });
   });

@@ -162,6 +162,18 @@ async function getTenConversionsByCurrency(currency) {
   }
 }
 
+async function getAllConversionRecords() {
+  try {
+    const conversions = await Conversion
+      .find()
+      .sort({ _id: -1 })
+
+    return conversions;
+  }  catch (ex) {
+    console.log(`Query Error ${ex.message}`);
+  }
+}
+
 function closeConnection() {
   db.close();
 }
@@ -171,5 +183,6 @@ module.exports = {
   getLastConversion,
   getLastTenConversions,
   getTenConversionsByCurrency,
+  getAllConversionRecords,
   closeConnection
 }
