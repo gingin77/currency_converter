@@ -65,6 +65,21 @@ currency_converter $ curry --help
     query-currency  Returns up to 10 records for a selected converted-to currency
     csv-export      Allows ALL historical conversions to be exported to a .csv file
 ```
+## Example Outputs
+### For `curry convert`
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_convert.png)
+
+### For `curry last-one`
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_last-one.png)
+
+### For `curry query-currency`
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_query-currency.png)
+
+### For `curry csv-export: invalid input prompt`
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_csv-export_input-prompt.png)
+
+### For `curry csv-export: success`
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_csv-export_done.png)
 
 ## Troubleshooting
 - If you see `null` after `Getting exchange rates....` as shown in the example below, you are not connecting with the Open Exchange Rates API and likely need to add your key to the .env file.
