@@ -4,6 +4,8 @@ A  Node.js command-line interface app for converting currencies.
 
 To run this tool, you must obtain a key from [Open Exchange Rates](https://openexchangerates.org/). This is easy and doesn't require that you give credit card info.
 
+Users are able to select both the input and output currency type. Conversion records are stored in a local Mongo database. Besides doing simple conversions, the user can retrieve the last conversion, up to 10 of the most recent conversions, and can choose a convert-to currency to filter on. Finally, the entire db can be exported to a .csv file. The user can choose and file name and file location, though the path defaults to the current directory so if the user doesn't want to enter a file path, they do not need to.
+
 ## System Requirements
 1. [Node.JS](https://nodejs.org/en/)
 2. [MongoDB](https://www.mongodb.com/)
@@ -63,7 +65,7 @@ currency_converter $ curry --help
 ```
 
 ## Troubleshooting
-If you see `null` after `Getting exchange rates....` as shown in the example below, you are not connecting with the Open Exchange Rates API and likely need to add your key to the .env file.
+- If you see `null` after `Getting exchange rates....` as shown in the example below, you are not connecting with the Open Exchange Rates API and likely need to add your key to the .env file.
 
 ```shell
  currency_converter  $ curry convert
@@ -74,3 +76,4 @@ If you see `null` after `Getting exchange rates....` as shown in the example bel
 Getting exchange rates...
 null
 ```
+- Error handling is incomplete, so use control+C to return to the terminal prompt when the script hangs.
