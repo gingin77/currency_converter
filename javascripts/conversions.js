@@ -1,24 +1,37 @@
 const mongoose   = require('mongoose');
-const validators = require('mongoose-validators');
+const validate = require('mongoose-validator');
 
-const currencyNames = require('./lib/currency_names_codes.json');
-const { getExchangeRates } = require('./rates');
+const currencyNames = require('../lib/currency_names_codes.json');
+const { getExchangeRates } = require("../javascripts/rates");
 
 mongoose.connect('mongodb://localhost/currency_converter')
   .catch(err => console.error('Could not connect to the database...', err));
 
 const db = mongoose.connection;
 
+var isoValidator = [
+  validate({
+    validator: "isLength",
+    arguments: [3],
+    message: "The ISO currency code should be 3 letters long."
+  }),
+  validate({
+    validator: "isAlpha",
+    passIfEmpty: true,
+    message: "Name should contain alphabet characters"
+  })
+];
+
 const conversionSchema = mongoose.Schema({
   baseISO: {
     type: String,
     required: true,
-    validate: validators.isLength(3)
+    validate: isoValidator
   },
   convertToISO: {
     type: String,
     required: true,
-    validate: validators.isLength(3)
+    validate: isoValidator
   },
   baseCurrencyName: {
     type: String,
@@ -178,11 +191,16 @@ function closeConnection() {
   db.close();
 }
 
+function testConsoleLogger() {
+  console.log("This test function works!")
+}
+
 module.exports = {
   createConversion,
   getLastConversion,
   getLastTenConversions,
   getTenConversionsByCurrency,
   getAllConversionRecords,
-  closeConnection
-}
+  closeConnection,
+  testConsoleLogger
+};

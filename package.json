@@ -3,9 +3,6 @@
   "version": "1.1.0",
   "description": "A command-line currency converter",
   "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [
     "currency",
     "currency-converter",
@@ -33,13 +30,5 @@
     "mongoose-validator": "^2.0.2",
     "pluralize": "^7.0.0",
     "request": "^2.87.0"
-  },
-  "devDependencies": {
-    "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.1.0",
-    "jest": "^23.1.0"
   }
 }

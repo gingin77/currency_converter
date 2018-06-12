@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const { version } = require("./package");
 const program  = require('commander');
 const inquirer = require('inquirer');
 const prompt = inquirer.createPromptModule();
@@ -16,17 +17,16 @@ const {
   getLastTenConversions,
   getTenConversionsByCurrency,
   closeConnection
-} = require('./conversions')
+} = require("./javascripts/conversions");
 
 const {
   prettyPrintConversion,
   prettyPrintRecordsInList
-} = require("./formatter");
+} = require("./javascripts/formatter");
 
-const { generateCsvBackup } = require('./csv_handler');
+const { generateCsvBackup } = require("./javascripts/csv_handler");
 
-program
-  .version('0.0.1')
+program.version(version);
 
 function printSingle(result, newRecordStatus) {
   prettyPrintConversion(result, newRecordStatus);
