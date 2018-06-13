@@ -66,19 +66,19 @@ currency_converter $ curry --help
     csv-export      Allows ALL historical conversions to be exported to a .csv file
 ```
 ## Example Outputs
-### For `curry convert`
+#### For `curry convert`
 ![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_convert.png)
 
-### For `curry last-one`
+#### For `curry last-one`
 ![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_last-one.png)
 
-### For `curry query-currency`
+#### For `curry query-currency`
 ![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_query-currency.png)
 
-### For `curry csv-export: invalid input prompt`
+#### For `curry csv-export: invalid input prompt`
 ![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_csv-export_input-prompt.png)
 
-### For `curry csv-export: success`
+#### For `curry csv-export: success`
 ![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_csv-export_done.png)
 
 ## Troubleshooting
