@@ -1,6 +1,5 @@
-const Json2csvParser = require("json2csv").Parser;
-const fs = require("fs");
-
+const Json2csvParser              = require("json2csv").Parser;
+const fs                          = require("fs");
 const { getAllConversionRecords } = require("./conversions");
 
 async function generateCsvBackup(fileInfo) {

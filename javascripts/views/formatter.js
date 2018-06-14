@@ -1,6 +1,6 @@
-const moment = require('moment');
-const pluralize = require('pluralize');
-const columnify = require("columnify");
+const moment                = require('moment');
+const pluralize             = require('pluralize');
+const columnify             = require("columnify");
 const getSymbolFromCurrency = require("currency-symbol-map");
 
 function namePluralizer(amount, currencyName) {

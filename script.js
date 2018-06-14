@@ -22,7 +22,7 @@ const {
 const {
   prettyPrintConversion,
   prettyPrintRecordsInList
-} = require("./javascripts/formatter");
+} = require("./javascripts/views/formatter");
 
 const { generateCsvBackup } = require("./javascripts/csv_handler");
 
