@@ -16,11 +16,11 @@ Users are able to select both the input and output currency type. Conversion rec
 
 ## Dependencies
 For details, see the [package.json](https://github.com/gingin77/currency_converter/blob/master/package.json) file.
-- Command line interface is supported by `commander` and `inquirer` modules
-- API access depends on the `request` and `dotenv` modules
-- Conversion record validation an storage depends on `mongoose` modules
-- CSV export uses `json2csv` and Node's Core File System modules
-- Multiple formatting modules were used to improve terminal output readability (`columnify`, `currency-symbol-map`, `moment`, and `pluralize`)
+- Command line interface is supported by the `commander` and `inquirer` packages
+- API access depends on the `request` and `dotenv` packages
+- Conversion record validation and storage depends on `mongoose`
+- CSV export uses the `json2csv` package and Node's core File System modules
+- Multiple formatting packages were used to improve terminal output readability (`columnify`, `currency-symbol-map`, `moment`, and `pluralize`)
 
 ## Installation Steps
 1. Clone the [currency converter repo](https://github.com/gingin77/currency_converter) and move into the currency_converter directory.
