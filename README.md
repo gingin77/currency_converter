@@ -8,10 +8,10 @@ Users are able to select both the input and output currency type. Conversion rec
 
 ## System Requirements
 1. [Node.JS](https://nodejs.org/en/)
-  - I've been running v8.11.2 during development and manual testing
+    - I've been running v8.11.2 during development and manual testing
 2. [MongoDB](https://www.mongodb.com/)
-  - The database needs to be running. For more info on installing and setting up MongoDB, visit [Install MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/).
-  - I've been running MongoDB shell version v3.6.5 during development and manual testing
+    - The database needs to be running. For more info on installing and setting up MongoDB, visit [Install MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/).
+    - I've been running MongoDB shell version v3.6.5 during development and manual testing
 3. [git](https://git-scm.com/) (needed if cloning this repo)
 
 ## Dependencies
