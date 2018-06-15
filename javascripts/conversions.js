@@ -8,66 +8,90 @@ const currencyNames        = require('../lib/currency_names_codes.json');
 const { getExchangeRates } = require("../javascripts/rates");
 const { Conversion }       = require('./models/conversion')
 
-function organizeinputs(answers) {
+function organizeInputs(answers) {
   const {
     baseCurrencyName,
-    convertToCurrencyName,
+    convertToCurrencyNames,
     inputAmount
   } = answers;
 
+  const convertToObject = convertToCurrencyNames.map(name => ({
+    name: name,
+    iso: currencyNames[name]
+  }));
+  
   return {
-    baseCurrencyName: baseCurrencyName,
-    convertToCurrencyName: convertToCurrencyName,
-    baseISO: currencyNames[baseCurrencyName],
-    convertToISO: currencyNames[convertToCurrencyName],
-    inputAmount: inputAmount
+    name: baseCurrencyName,
+    iso: currencyNames[baseCurrencyName],
+    amount: inputAmount,
+    convertToNames: convertToObject,
   }
 }
 
 async function getRatesObject(inputs) {
   try {
-    const [base, convert] = [inputs.baseISO, inputs.convertToISO];
+    const base = inputs.iso;
+    const convert = inputs.convertToNames.map(c => c.iso);
     const rateApiResponse = await getExchangeRates(base, convert);
 
     const { rates } = rateApiResponse;
     const ratePublicationTime = rateApiResponse.timestamp * 1000;
+    
+    const convertToOutputs = convert.map(currency => ({
+      iso: currency,
+      rate: rates[currency]
+    }))
 
-    const ratesObject = {
-      baseRate: rates[inputs.baseISO],
-      convertToRate: rates[inputs.convertToISO],
+    const ratesObject = { 
+      baseRate: rates[inputs.iso],
+      convertToRate: convertToOutputs,
       ratePublicationTime: ratePublicationTime
-    }
+    };
     return ratesObject
 
   }
   catch (ex) {
-    console.log(ex.message);
+    console.log(`Im the catch message for getRatesObject: ${ex.message}`);
   }
 }
 
-function calculateConversion(rates, inputs) {
-  const ratesRatio = 1 / rates.baseRate * rates.convertToRate;
-  const product = inputs.inputAmount * ratesRatio;
+function calculateConversion(rates, inputAmount) {
+  const baseRate = rates.baseRate;
 
-  return { outputAmount: product }
+  return rates.convertToRate.map(convertTo => {
+    let amount = inputAmount * 1 / baseRate * convertTo.rate;
+    return Object.assign(convertTo, { amount: amount })
+  });
 }
 
 async function createConversion(answers) {
-  const inputs = organizeinputs(answers);
+  const inputs = organizeInputs(answers);
 
   try {
     const rates = await getRatesObject(inputs);
-    const outputAmount = calculateConversion(rates, inputs);
+    const convertToData = calculateConversion(rates, inputs.amount);
+    const convertTo = []
 
-    const conversion = new Conversion(
-      Object.assign(inputs, rates, outputAmount)
-    );
+    inputs.convertToNames.forEach((object, index) => {
+      convertTo.push(Object.assign({}, object, convertToData[index]));
+    }, this);
+
+    delete inputs.convertToNames;
+
+    const conversion = new Conversion(Object.assign(
+      inputs,
+      { convertTo: convertTo },
+      { 
+        ratePublicationTime: rates.ratePublicationTime,
+        rate: rates.baseRate
+      }
+    ));
     const document = await conversion.save();
     return document
-
   }
   catch (ex) {
-    console.log(ex.message);
+    console.log(`Im the error(s) for createConversion....\n${ex.message}
+    THE END`);
   }
 }
 
@@ -103,7 +127,7 @@ async function getTenConversionsByCurrency(currency) {
 
   try {
     const conversions = await Conversion
-      .find({ convertToCurrencyName: queryCurrency })
+      .find({ convertToCurrencyNames: queryCurrency })
       .sort({ _id: -1 })
       .limit(10);
     return conversions;
@@ -129,16 +153,11 @@ function closeConnection() {
   db.close();
 }
 
-function testConsoleLogger() {
-  console.log("This test function works!")
-}
-
 module.exports = {
   createConversion,
   getLastConversion,
   getLastTenConversions,
   getTenConversionsByCurrency,
   getAllConversionRecords,
-  closeConnection,
-  testConsoleLogger
+  closeConnection
 };

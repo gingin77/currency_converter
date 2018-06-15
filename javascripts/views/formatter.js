@@ -16,33 +16,48 @@ function valueFormatter(amount) {
   });
 }
 
-function formatString(isoCode, amount, currencyName) {
+function formatString(isoCode, amount, currencyName, type) {
   const symbol = getSymbolFromCurrency(isoCode);
   const value = valueFormatter(amount);
   const name = namePluralizer(amount, currencyName);
 
-  return `${symbol} ${value} ${name}`;
+  if (type == "input") {
+    return `${symbol} ${value} ${name}`
+  } else {
+    return ({
+      [`${symbol} ${value}`]: name
+    })
+  }
+}
+
+function conversionsAsColumns(outputStringsForColumnify){
+  console.log(columnify(outputStringsForColumnify, {
+    columns: ["Value", "Currency"],
+    minWidth: 16,
+    config: {
+      Value: { align: "right" }
+    }
+  }))
 }
 
 function newConversionMessageTemplate(details) {
   const { inputString,
-          outputString,
+          outputStrings,
+          conversionNumberDependentString,
           ratePublicationTimeF,
           rateObject,
           conversionTimeF } = details;
 
-  console.log(`\n
-The amount of:  ${inputString}
-Is valued at:  ${outputString}
+  const outputStringsForColumnify = Object.assign({}, ...outputStrings)
+ 
+  console.log(`
+${inputString} is valued at:`)
+  conversionsAsColumns(outputStringsForColumnify)
+  console.log(`
+${conversionNumberDependentString} calculated based on exchange rates from openexchangerates.org posted on ${ratePublicationTimeF}.
 
-The conversion value was calculated based on exchange rates from openexchangerates.org
-posted on ${ratePublicationTimeF}.
-
-Exchange rates are set with respect to one US Dollar ($1.00).\n
-  ${columnify(rateObject, {
-    columns: ["Currency", "Rate"],
-    minWidth: 40
-  })}
+Exchange rates are set with respect to one US Dollar ($1.00).
+  ${columnify(rateObject, { columns: ["Currency", "Rate"], minWidth: 40 })}
 
 This conversion was retrieved on ${conversionTimeF}.
   `);
@@ -50,17 +65,19 @@ This conversion was retrieved on ${conversionTimeF}.
 
 function historicConversionMessageTemplate(details) {
   const { inputString,
-    outputString,
+    outputStrings,
+    conversionNumberDependentString,
     ratePublicationTimeF,
     rateObject,
     conversionTimeF } = details;
 
-  console.log(`\nThe following details pertain to the last conversion stored in the database.\n
-The amount of:  ${inputString}
-Was valued at:  ${outputString}
+  const outputStringsForColumnify = Object.assign({}, ...outputStrings)
 
-This conversion was calculated on ${conversionTimeF} using rates published
-by openexchangerates.org on ${ratePublicationTimeF}.
+  console.log(`\nThe following details pertain to the last conversion stored in the database.\n
+${inputString} was valued at:`)
+  conversionsAsColumns(outputStringsForColumnify)
+  console.log(`
+${conversionNumberDependentString} calculated on ${conversionTimeF} using rates published by openexchangerates.org on ${ratePublicationTimeF}.
 
 At the time, the exchange rates were:
 ${columnify(rateObject, { columns: ["Currency", "Rate"], minWidth: 40 })}
@@ -108,34 +125,44 @@ ${columnify(recordsObj, {
 If you would like to access more details from your currency conversion history, you \ncan export all of you conversions to a CSV file with the 'csv-export' option.`);
 }
 
+function conversionPluralization(length) {
+  if (length > 1) {
+    return "These currency conversions were";
+  } else {
+    return "This currency conversion was";
+  }
+}
+
 function prettyPrintConversion(conversion, newRecordStatus) {
   const {
-    baseISO,
-    convertToISO,
-    baseCurrencyName,
-    convertToCurrencyName,
-    baseRate,
-    convertToRate,
-    inputAmount,
-    outputAmount,
+    conversionTime,
+    name,
+    iso,
+    amount,
+    convertTo,
     ratePublicationTime,
-    conversionTime
+    rate
   } = conversion;
 
-  const inputString = formatString(baseISO, inputAmount, baseCurrencyName);
-  const outputString = formatString(convertToISO,outputAmount,convertToCurrencyName);
+  const inputString = formatString(iso, amount, name, "input");
+  const outputStrings = convertTo.map(c => {
+    return formatString(c.iso, c.amount, c.name, "output");
+  });
 
+  const conversionNumberDependentString = conversionPluralization(convertTo.length);
   const ratePublicationTimeF = messageTimeFormatter(ratePublicationTime);
   const conversionTimeF = messageTimeFormatter(conversionTime);
-
-  const rateObject = {
-    [baseCurrencyName]: baseRate.toFixed(4),
-    [convertToCurrencyName]: convertToRate.toFixed(4)
-  };
-
+  const convertToRates1 = convertTo.map(c => {
+    return { [c.name]: c.rate.toFixed(4) }
+  });
+  convertToRates = Object.assign({}, ...convertToRates1)
+  
+  const rateObject = Object.assign({ [name]: rate.toFixed(4) }, convertToRates);
+    
   const details = {
     inputString: inputString,
-    outputString: outputString,
+    outputStrings: outputStrings,
+    conversionNumberDependentString: conversionNumberDependentString,
     ratePublicationTimeF: ratePublicationTimeF,
     rateObject: rateObject,
     conversionTimeF: conversionTimeF

@@ -10,42 +10,45 @@ var isoValidator = [
   validate({
     validator: "isAlpha",
     passIfEmpty: true,
-    message: "Name should contain alphabet characters"
+    message: "The ISO currency code should contain only alphabet characters"
   })
 ];
 
+const convertToSchema = mongoose.Schema({
+  iso: {
+    type: String,
+    required: true,
+    validate: isoValidator
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  rate: {
+    type: Number,
+    required: true
+  },
+  amount: {
+    type: Number,
+    required: true
+  }
+});
+
 const conversionSchema = mongoose.Schema({
-  baseISO: {
+  iso: {
     type: String,
     required: true,
     validate: isoValidator
   },
-  convertToISO: {
-    type: String,
-    required: true,
-    validate: isoValidator
-  },
-  baseCurrencyName: {
+  name: {
     type: String,
     required: true
   },
-  convertToCurrencyName: {
-    type: String,
-    required: true
-  },
-  baseRate: {
+  rate: {
     type: Number,
     required: true
   },
-  convertToRate: {
-    type: Number,
-    required: true
-  },
-  inputAmount: {
-    type: Number,
-    required: true
-  },
-  outputAmount: {
+  amount: {
     type: Number,
     required: true
   },
@@ -57,7 +60,8 @@ const conversionSchema = mongoose.Schema({
     type: Date,
     default: Date.now(),
     required: true
-  }
+  },
+  convertTo: [convertToSchema]
 });
 
 const Conversion = mongoose.model("Conversion", conversionSchema);
