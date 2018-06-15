@@ -19,11 +19,8 @@ const {
   closeConnection
 } = require("./javascripts/conversions");
 
-const {
-  prettyPrintConversion,
-  prettyPrintRecordsInList
-} = require("./javascripts/views/formatter");
-
+const { prettyPrintConversion } = require("./views/singles_formatter");
+const { prettyPrintRecordsInList } = require("./views/list_formatter");
 const { generateCsvBackup } = require("./javascripts/csv_handler");
 
 program.version(version);
