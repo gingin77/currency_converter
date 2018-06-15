@@ -126,10 +126,26 @@ async function getTenConversionsByCurrency(currency) {
   const { queryCurrency } = currency
 
   try {
-    const conversions = await Conversion
-      .find({ convertToCurrencyNames: queryCurrency })
-      .sort({ _id: -1 })
-      .limit(10);
+    const conversions = await Conversion.aggregate([
+      { $match: { 'convertTo.name': queryCurrency } },
+      {
+        $project: {
+          _id: 0,
+          conversionTime: 1,
+          name: 1,
+          amount: 1,
+          ratePublicationTime: 1,
+          rate: 1,
+          convertTo: {
+            $filter: {
+              input: '$convertTo',
+              as: 'convertTo',
+              cond: { $eq: ['$$convertTo.name', queryCurrency] }
+            }
+          }
+        }
+      }
+    ])
     return conversions;
 
   } catch (ex) {
