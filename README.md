@@ -67,13 +67,16 @@ currency_converter $ curry --help
 ```
 ## Example Outputs
 #### For `curry convert`
-![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_convert.png)
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/convert.png)
 
 #### For `curry last-one`
-![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_last-one.png)
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/last-one.png)
+
+#### For `curry last-ten`
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/last-ten.png)
 
 #### For `curry query-currency`
-![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_query-currency.png)
+![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/query-currency.png)
 
 #### For `curry csv-export: invalid input prompt`
 ![alt text](https://github.com/gingin77/currency_converter/blob/master/example_outputs/curry_csv-export_input-prompt.png)
