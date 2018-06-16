@@ -9,8 +9,7 @@ function outputToConsole(recordsCollected) {
     (acc, val) => acc.concat(val), []
   );
 
-  console.log(
-    columnify(recordsforColumnify, {
+  console.log(columnify(recordsforColumnify, {
       config: {
         base_currency: { minWidth: 30 },
         b_amount: { align: "right", minWidth: 12 },
@@ -18,10 +17,10 @@ function outputToConsole(recordsCollected) {
         convert_to_currency: { minWidth: 30 },
         b_rate: { align: "right", minWidth: 10 },
         ct_rate: { align: "right", minWidth: 10 },
-        rate_Pub_Time: { align: "center", minWidth: 30 }
+        rate_Pub_Time: { align: "right", minWidth: 30 },
+        conversion_Time: { align: "right", minWidth: 30 }
       }
-    })
-  );
+    }));
 }
 
 function reorganizeContent(records) {
