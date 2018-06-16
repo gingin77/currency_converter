@@ -4,7 +4,29 @@ const {
   listTimeFormat
 } = require("./console_shared.js");
 
-function prettyPrintRecordsInList(records) {
+function outputToConsole(recordsCollected) {
+  let recordsforColumnify = recordsCollected.reduce(
+    (acc, val) => acc.concat(val), []
+  );
+
+  console.log(
+    columnify(recordsforColumnify, {
+      config: {
+        base_currency: { minWidth: 30 },
+        b_amount: { align: "right", minWidth: 12 },
+        ct_amount: { align: "right", minWidth: 12 },
+        convert_to_currency: { minWidth: 30 },
+        b_rate: { align: "right", minWidth: 10 },
+        ct_rate: { align: "right", minWidth: 10 },
+        rate_Pub_Time: { align: "center", minWidth: 30 }
+      }
+    })
+  );
+}
+
+function reorganizeContent(records) {
+  let recordsCollected = [];
+
   records.forEach(r => {
     let input = {
       base_currency: r.name,
@@ -13,7 +35,7 @@ function prettyPrintRecordsInList(records) {
       rate_Pub_Time: listTimeFormat(r.ratePublicationTime),
       conversion_Time: listTimeFormat(r.conversionTime)
     };
-    
+
     let outputs = r.convertTo.map(c => {
       return {
         name: c.name,
@@ -22,7 +44,7 @@ function prettyPrintRecordsInList(records) {
       }
     });
 
-    let objectForColuminfy = outputs.map(c => {
+    let singleObjectForColuminfy = outputs.map(c => {
       return {
         base_currency: input.base_currency,
         b_amount: input.input_amount,
@@ -34,19 +56,14 @@ function prettyPrintRecordsInList(records) {
         conversion_Time: input.conversion_Time
       }
     });
-
-    console.log(columnify(objectForColuminfy, {
-        config: {
-          base_currency: { minWidth: 30 },
-          b_amount: { align: "right", minWidth: 12 },
-          ct_amount: { align: "right", minWidth: 12 },
-          convert_to_currency: { minWidth: 30 },
-          b_rate: { align: "right", minWidth: 10 },
-          ct_rate: { align: "right", minWidth: 10 },
-          rate_Pub_Time: { align: "center", minWidth: 30 }
-        }
-      }));
+    recordsCollected.push(Array.from(singleObjectForColuminfy));
   });
+  return recordsCollected;
+}
+
+function prettyPrintRecordsInList(records) {
+  let recordsCollected = reorganizeContent(records);
+  outputToConsole(recordsCollected);
 }
 
 module.exports = { prettyPrintRecordsInList };
