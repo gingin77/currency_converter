@@ -155,10 +155,23 @@ async function getTenConversionsByCurrency(currency) {
 
 async function getAllConversionRecords() {
   try {
-    const conversions = await Conversion
-      .find()
-      .sort({ _id: -1 })
-
+    const conversions = await Conversion.aggregate([
+      { $unwind: "$convertTo" },
+      { $project: {
+        _id: 0,
+        'baseAmount': '$amount',
+        'baseName': '$name',
+        'baseRate': '$rate',
+        'convertToAmount': '$convertTo.amount',
+        'convertToName': '$convertTo.name',
+        'convertToRate': '$convertTo.rate',
+        'convertToIso': '$convertTo.iso',
+        'convertToId': '$convertTo._id',
+        'conversionTime': '$conversionTime',
+        'ratePublicationTime': '$ratePublicationTime',
+        'recordId': '$_id',
+      }}
+    ])
     return conversions;
   }  catch (ex) {
     console.log(`Query Error ${ex.message}`);

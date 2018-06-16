@@ -1,14 +1,13 @@
 const Json2csvParser              = require("json2csv").Parser;
 const fs                          = require("fs");
 const { getAllConversionRecords } = require("./conversions");
-const { success }                 = require("./views/csv");
+const { success }                 = require("../views/csv");
 
 function organizeContent(conversions) {
-  const data       = conversions.map(r => r.toObject());
-  const headers    = Object.keys(data[0]);
-  const jsonParser = new Json2csvParser({ headers });
+  const headers = Object.keys(conversions[0]);
+  const jsonParser = new Json2csvParser({ headers })
 
-  return(jsonParser.parse(data));
+  return(jsonParser.parse(conversions));
 }
 
 async function generateCsvBackup(fileInfo) {
